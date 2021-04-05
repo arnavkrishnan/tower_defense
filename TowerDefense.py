@@ -32,7 +32,7 @@ def draw_map():
             if map[i][j] == 0:
                 screen.blit(path_block, (grid_x, grid_y))
             else:
-                screen.blit(path_block, (grid_x, grid_y))
+#                screen.blit(path_block, (grid_x, grid_y))
                 screen.blit(grass_block, (grid_x, grid_y))
 
 draw_map()
