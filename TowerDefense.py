@@ -7,7 +7,6 @@ num_column = 12
 screen_width = grid_size*num_column
 screen_height = grid_size*num_row
 screen = pygame.display.set_mode([screen_width, screen_height])
-#screen.fill((0, 0, 0))
 
 grass_block = pygame.image.load('grass_block.png')
 grass_block = pygame.transform.scale(grass_block, (grid_size, grid_size))
@@ -43,13 +42,14 @@ def draw_map():
             if map[b][j] == 0:
                 screen.blit(path_block, (grid_x, grid_y))
             else:
-#                screen.blit(path_block, (grid_x, grid_y))
                 screen.blit(grass_block, (grid_x, grid_y))
+        pygame.display.update()
 
-pygame.display.update()
 Running = True
+draw_map()
 
 def draw_enemy(enemy):
+    print(1)
     tank = enemy[0]
     num_steps = enemy[1]
     cx = enemy[2]
@@ -86,7 +86,8 @@ def draw_enemy(enemy):
         else:
             return False
 
-enemy_list = []
+enemy = []
+enemy_list = [enemy]
 last_time = 0
 num_enemy = 20
 enemy_control = 0
