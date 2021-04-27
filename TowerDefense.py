@@ -10,7 +10,8 @@ screen = pygame.display.set_mode([screen_width, screen_height])
 
 grass_block = pygame.image.load('grass_block.png')
 grass_block = pygame.transform.scale(grass_block, (grid_size, grid_size))
-
+tank = pygame.image.load('tank.png')
+gun=pygame.image.load('gun.png')
 path_block = pygame.image.load('grass.png')
 path_block = pygame.transform.scale(path_block, (grid_size, grid_size))
 
@@ -30,8 +31,8 @@ def move_to(object, cx, cy, goal_x, goal_y, num_steps):
     cx += (goal_x - cx)/num_steps
     cy += (goal_y - cy)/num_steps
     rect.center = (cx, cy)
-    screen.blit(object1, rect)
-    screen.blit(object2, rect)
+    #screen.blit(object1, rect)
+    screen.blit(object, rect)
     return cx, cy
 
 def draw_map():
@@ -49,7 +50,7 @@ Running = True
 draw_map()
 
 def draw_enemy(enemy):
-    print(1)
+#    print(1)
     tank = enemy[0]
     num_steps = enemy[1]
     cx = enemy[2]
@@ -86,20 +87,23 @@ def draw_enemy(enemy):
         else:
             return False
 
-enemy = []
-enemy_list = [enemy]
+enemy_list = []
+#enemy_list = [enemy]
 last_time = 0
 num_enemy = 20
-enemy_control = 0
+enemy_counter = 0
 while(Running):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             Running = False
-    if pygame.time.get_ticks() - last_time > 2000 and enemy_control < num_enemy:
+    if pygame.time.get_ticks() - last_time > 2000 and enemy_counter < num_enemy:
         enemy_list.append([tank, 0, -40, 520, 0, 0, 0, -1])
         last_time = pygame.time.get_ticks()
-        enemy_control += 1
+        enemy_counter += 1
+        print(last_time)
+        print("Added enemy number ",enemy_counter)
     draw_map()
-    pygame.display.update()
     for enemy in enemy_list:
         draw_enemy(enemy)
+    pygame.time.Clock().tick(3000)
+    pygame.display.update()
