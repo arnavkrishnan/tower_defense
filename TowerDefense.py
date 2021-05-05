@@ -8,8 +8,8 @@ num_col = 12
 screen_width = grid_size*num_col
 screen_height = grid_size*num_row
 tower_selected = int(0)
-tower = []
 tower_list = []
+new_tower = []
 
 screen = pygame.display.set_mode([screen_width, screen_height]) # size of screen
 background = pygame.image.load('images/grassy_bg2.png')
@@ -119,6 +119,7 @@ def draw_enemy(enemy):
 	enemy[3] = cy
 	return True
 
+
 running = True
 enemy_list = []
 last_time = 0
@@ -139,6 +140,7 @@ while running:
 			grid_y = pos[1]//grid_size
 			new_tower = [tower_base, tower_gun, grid_x*grid_size, grid_y*grid_size, 0]
 			tower_list.append(new_tower)
+			draw_tower(new_tower)
 			tower_selected = 0
 
 	mouse_pressed = pygame.mouse.get_pressed()
@@ -155,6 +157,8 @@ while running:
 
 	tower_icon = [tower_base, tower_gun, 5.5*grid_size, 7*grid_size, 0]
 	draw_tower(tower_icon)
+	if not len(new_tower) < 5:
+		draw_tower(new_tower)
 
 
 	for enemy in enemy_list:
