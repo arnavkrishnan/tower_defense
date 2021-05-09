@@ -76,8 +76,9 @@ def move_to(object, cx, cy, goal_x, goal_y, num_steps):
 	cx += (goal_x - cx)/num_steps
 	cy += (goal_y - cy)/num_steps
 	rect.center = (cx, cy)
-	screen.blit(enemy_person, rect)
-	#screen.blit(cannon, rect)
+	#screen.blit(enemy_person, rect)
+	screen.blit(tank, rect)
+	screen.blit(cannon, rect)
 	return cx, cy
 
 def draw_enemy(enemy):
@@ -132,8 +133,13 @@ while running:
 			pos = pygame.mouse.get_pos()
 			grid_x = pos[0]//grid_size
 			grid_y = pos[1]//grid_size
-			if grid_x == 5 or grid_x == 6 and grid_y == 7:
+			if ((grid_x == 5 or grid_x == 6) and grid_y == 7):
 				tower_selected = 1
+			else:
+				for tower in tower_list:
+					if grid_x == tower[2]//grid_size and grid_y == tower[3]//grid_size:
+						tower[4] += 45
+						break
 		elif event.type == pygame.MOUSEBUTTONUP and tower_selected == 1:
 			pos = pygame.mouse.get_pos()
 			grid_x = pos[0]//grid_size
@@ -157,13 +163,14 @@ while running:
 
 	tower_icon = [tower_base, tower_gun, 5.5*grid_size, 7*grid_size, 0]
 	draw_tower(tower_icon)
-	if not len(new_tower) < 5:
-		draw_tower(new_tower)
 
 
 	for enemy in enemy_list:
 		if not draw_enemy(enemy):
 			enemy_list.remove(enemy)
+
+	for tower in tower_list:
+		draw_tower(tower)
 
 	pygame.time.Clock().tick(30)
 	pygame.display.update()
