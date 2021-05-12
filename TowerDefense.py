@@ -144,10 +144,11 @@ while running:
 			pos = pygame.mouse.get_pos()
 			grid_x = pos[0]//grid_size
 			grid_y = pos[1]//grid_size
-			new_tower = [tower_base, tower_gun, grid_x*grid_size, grid_y*grid_size, 0]
-			tower_list.append(new_tower)
-			draw_tower(new_tower)
-			tower_selected = 0
+			if map[grid_y][grid_x] == 2:
+				new_tower = [tower_base, tower_gun, grid_x*grid_size, grid_y*grid_size, 0]
+				tower_list.append(new_tower)
+				draw_tower(new_tower)
+				tower_selected = 0
 
 	mouse_pressed = pygame.mouse.get_pressed()
 	if mouse_pressed[0] == 1 and tower_selected == 1:
