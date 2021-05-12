@@ -34,16 +34,26 @@ tower_base = pygame.transform.scale(tower_base, (grid_size, grid_size))
 tower_gun = pygame.image.load('images/towerDefense_tile250.png')
 tower_gun = pygame.transform.scale(tower_gun, (int(tower_gun.get_width()/1.2), int(tower_gun.get_height()/1.5)))
 
+bullet = pygame.image.load('images/towerDefense_tile298.png')
+
+def draw_bullet(a_bullet):
+	firing = a_bullet[0]
+	firing = pygame.transform.rotate(firing, a_bullet[3])
+	rect = firing.get_rect()
+	rect.center = (a_bullet[1], a_bullet[2])
+	screen.blit(firing, rect)
+
+
 def draw_tower(tower):
 	tower_base = tower[0]
 	tower_gun = tower[1]
 	x = tower[2]
 	y = tower[3]
 	a = tower[4]
+	tower_gun = pygame.transform.rotate(tower_gun, a)
 	rect = tower_gun.get_rect()
 	rect.center = (x+int(grid_size/2), y+int(grid_size/2))
 	screen.blit(tower_base, (x, y))
-	tower_gun = pygame.transform.rotate(tower_gun, a)
 	screen.blit(tower_gun, rect)
 
 
@@ -71,14 +81,14 @@ def draw_map():
 			elif map[i][j] == 2:
 				screen.blit(base, (grid_x, grid_y))
 
-def move_to(object, cx, cy, goal_x, goal_y, num_steps):
+def move_to(object, object2, cx, cy, goal_x, goal_y, num_steps):
 	rect = object.get_rect()
 	cx += (goal_x - cx)/num_steps
 	cy += (goal_y - cy)/num_steps
 	rect.center = (cx, cy)
 	#screen.blit(enemy_person, rect)
-	screen.blit(tank, rect)
-	screen.blit(cannon, rect)
+	screen.blit(object, rect)
+	screen.blit(object2, rect)
 	return cx, cy
 
 def draw_enemy(enemy):
@@ -100,9 +110,9 @@ def draw_enemy(enemy):
 			goal_x = path[i][1]*grid_size+grid_size/2
 			direction = 0
 			if goal_y > cy+1:
-				direction = 90
-			if goal_y < cy-1:
 				direction = -90
+			if goal_y < cy-1:
+				direction = 90
 			if goal_x < cx-1:
 				direction = 180
 			enemy[0] = tank
@@ -114,7 +124,8 @@ def draw_enemy(enemy):
 			return False
 
 	atank = pygame.transform.rotate(tank, direction)
-	cx, cy = move_to(atank, cx, cy, goal_x, goal_y, num_steps)
+	acannon = pygame.transform.rotate(cannon, direction)
+	cx, cy = move_to(atank, acannon, cx, cy, goal_x, goal_y, num_steps)
 	enemy[1] = num_steps
 	enemy[2] = cx
 	enemy[3] = cy
@@ -125,6 +136,7 @@ running = True
 enemy_list = []
 last_time = 0
 while running:
+	draw_map()
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			running = False
@@ -160,8 +172,6 @@ while running:
 		enemy_list.append([tank, 0, -40, 520, 0, 0, 0, -1])
 		last_time = pygame.time.get_ticks()
 
-	draw_map()
-
 	tower_icon = [tower_base, tower_gun, 5.5*grid_size, 7*grid_size, 0]
 	draw_tower(tower_icon)
 
@@ -172,6 +182,7 @@ while running:
 
 	for tower in tower_list:
 		draw_tower(tower)
+
 
 	pygame.time.Clock().tick(30)
 	pygame.display.update()
