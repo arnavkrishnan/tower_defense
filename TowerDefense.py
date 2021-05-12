@@ -1,4 +1,5 @@
 import pygame
+import math
 pygame.init()
 
 #create screen
@@ -10,6 +11,9 @@ screen_height = grid_size*num_row
 tower_selected = int(0)
 tower_list = []
 new_tower = []
+bullet_list = []
+firing_rate  = 30
+pi = 3.14159265359
 
 screen = pygame.display.set_mode([screen_width, screen_height]) # size of screen
 background = pygame.image.load('images/grassy_bg2.png')
@@ -36,12 +40,21 @@ tower_gun = pygame.transform.scale(tower_gun, (int(tower_gun.get_width()/1.2), i
 
 bullet = pygame.image.load('images/towerDefense_tile298.png')
 
-def draw_bullet(a_bullet):
+def draw_bullet (a_bullet):
 	firing = a_bullet[0]
 	firing = pygame.transform.rotate(firing, a_bullet[3])
 	rect = firing.get_rect()
+	a_bullet[1] += -10*math.sin(pi*a_bullet[3]/180.0)
+	a_bullet[2] += -10*math.cos(pi*a_bullet[3]/180.0)
+	a_bullet[4] -= 1
 	rect.center = (a_bullet[1], a_bullet[2])
 	screen.blit(firing, rect)
+
+def collision(cx, cy, r, rx, ry, d):
+	if abs(cx-rx) < r+d and abs(cy-ry) < r+d:
+		return True
+	else:
+		return False
 
 
 def draw_tower(tower):
@@ -157,7 +170,7 @@ while running:
 			grid_x = pos[0]//grid_size
 			grid_y = pos[1]//grid_size
 			if map[grid_y][grid_x] == 2:
-				new_tower = [tower_base, tower_gun, grid_x*grid_size, grid_y*grid_size, 0]
+				new_tower = [tower_base, tower_gun, grid_x*grid_size, grid_y*grid_size, 0, 0]
 				tower_list.append(new_tower)
 				draw_tower(new_tower)
 				tower_selected = 0
@@ -180,8 +193,27 @@ while running:
 		if not draw_enemy(enemy):
 			enemy_list.remove(enemy)
 
+	for a_bullet in bullet_list:
+		draw_bullet(a_bullet)
+		if a_bullet[4] <= 0:
+			bullet_list.remove(a_bullet)
+		else:
+			for enemy in enemy_list:
+				if collision(a_bullet[1], a_bullet[2], a_bullet[0].get_width()//4, enemy[2], enemy[3], enemy[0].get_width()//8):
+					enemy_list.remove(enemy)
+					bullet_list.remove(a_bullet)
+					#money += enemy_price
+					break
+
 	for tower in tower_list:
 		draw_tower(tower)
+		if tower[5] == 0:
+			x = tower[2]+grid_size//2-(grid_size//2)*math.sin(pi*tower[4]/180.0)
+			y = tower[3]+grid_size//2-(grid_size//2)*math.cos(pi*tower[4]/180.0)
+			a_bullet = [bullet, x, y, tower[4], 10]
+			bullet_list.append(a_bullet)
+		tower[5] = (tower[5]+1)%firing_rate
+
 
 
 	pygame.time.Clock().tick(30)
