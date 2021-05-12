@@ -9,10 +9,16 @@ num_col = 12
 screen_width = grid_size*num_col
 screen_height = grid_size*num_row
 tower_selected = int(0)
+money = 100
+tower_cost = 50
+enemy_price = 10
 tower_list = []
 new_tower = []
 bullet_list = []
+health = 20
 firing_rate  = 30
+speed = 1
+interval = 2000
 pi = 3.14159265359
 
 screen = pygame.display.set_mode([screen_width, screen_height]) # size of screen
@@ -39,6 +45,13 @@ tower_gun = pygame.image.load('images/towerDefense_tile250.png')
 tower_gun = pygame.transform.scale(tower_gun, (int(tower_gun.get_width()/1.2), int(tower_gun.get_height()/1.5)))
 
 bullet = pygame.image.load('images/towerDefense_tile298.png')
+
+def draw_text(text,size, cx, cy):
+	font = pygame.font.Font('freesansbold.ttf',size)
+	bigtext = font.render(text, True, (255,255,255))
+	textrect = bigtext.get_rect()
+	textrect.center = (cx,cy)
+	screen.blit(bigtext, textrect)
 
 def draw_bullet (a_bullet):
 	firing = a_bullet[0]
@@ -118,7 +131,7 @@ def draw_enemy(enemy):
 	else:
 		if i < len(path)-1:
 			i += 1
-			num_steps = 30
+			num_steps = 30/speed
 			goal_y = path[i][0]*grid_size+grid_size/2
 			goal_x = path[i][1]*grid_size+grid_size/2
 			direction = 0
@@ -165,13 +178,14 @@ while running:
 					if grid_x == tower[2]//grid_size and grid_y == tower[3]//grid_size:
 						tower[4] += 45
 						break
-		elif event.type == pygame.MOUSEBUTTONUP and tower_selected == 1:
+		elif event.type == pygame.MOUSEBUTTONUP and tower_selected == 1 and money >= tower_cost:
 			pos = pygame.mouse.get_pos()
 			grid_x = pos[0]//grid_size
 			grid_y = pos[1]//grid_size
 			if map[grid_y][grid_x] == 2:
 				new_tower = [tower_base, tower_gun, grid_x*grid_size, grid_y*grid_size, 0, 0]
 				tower_list.append(new_tower)
+				money -= tower_cost
 				draw_tower(new_tower)
 				tower_selected = 0
 
@@ -181,7 +195,7 @@ while running:
 		tower = [tower_base, tower_gun, pos[0]-grid_size//2, pos[1]-grid_size//2, 0]
 		draw_tower(tower)
 
-	if pygame.time.get_ticks() - last_time > 2000:
+	if pygame.time.get_ticks() - last_time > interval:
 		enemy_list.append([tank, 0, -40, 520, 0, 0, 0, -1])
 		last_time = pygame.time.get_ticks()
 
@@ -192,6 +206,7 @@ while running:
 	for enemy in enemy_list:
 		if not draw_enemy(enemy):
 			enemy_list.remove(enemy)
+			health -= 1
 
 	for a_bullet in bullet_list:
 		draw_bullet(a_bullet)
@@ -202,8 +217,10 @@ while running:
 				if collision(a_bullet[1], a_bullet[2], a_bullet[0].get_width()//4, enemy[2], enemy[3], enemy[0].get_width()//8):
 					enemy_list.remove(enemy)
 					bullet_list.remove(a_bullet)
-					#money += enemy_price
+					money += enemy_price
 					break
+	draw_text("$"+str(money),30, 40, 30) # money
+	draw_text("health: "+str(health),30, 880, 30) # health
 
 	for tower in tower_list:
 		draw_tower(tower)
